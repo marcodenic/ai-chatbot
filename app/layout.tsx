@@ -3,7 +3,8 @@ import { Metadata } from 'next'
 import { Toaster } from 'react-hot-toast'
 
 import '@/app/globals.css'
-import { fontMono, fontSans } from '@/lib/fonts'
+import { Inter } from 'next/font/google'
+const inter = Inter({ subsets: ['latin'] })
 import { cn } from '@/lib/utils'
 import { TailwindIndicator } from '@/components/tailwind-indicator'
 import { Providers } from '@/components/providers'
@@ -34,13 +35,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
-      <body
-        className={cn(
-          'font-sans antialiased',
-          fontSans.variable,
-          fontMono.variable
-        )}
-      >
+      <body className={`${inter.className}`}>
         <Toaster />
         <Providers attribute="class" defaultTheme="system" enableSystem>
           <div className="flex flex-col min-h-screen">
