@@ -1,8 +1,20 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
+  webpack: config => {
+    config.ignoreWarnings = [
+      // https://webpack.js.org/configuration/other-options/#ignorewarnings
+      {
+        module: /node-fetch/,
+        message: /.*Can't resolve 'encoding'.*/
+      }
+    ]
+
+    return config
+  },
+
   reactStrictMode: true,
   experimental: {
-    serverActions: true,
+    serverActions: true
   },
   images: {
     remotePatterns: [
@@ -10,8 +22,8 @@ module.exports = {
         protocol: 'https',
         hostname: 'avatars.githubusercontent.com',
         port: '',
-        pathname: '**',
-      },
-    ],
-  },
-};
+        pathname: '**'
+      }
+    ]
+  }
+}

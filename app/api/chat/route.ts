@@ -42,7 +42,6 @@ export async function POST(req: Request) {
     role: 'system',
     content: '{"type": "json_object"}'
   }
-
   // Prepend the system prompt and JSON format instruction to the messages array
   const messagesWithSystemPrompt = [
     systemPrompt,
@@ -83,49 +82,44 @@ export async function POST(req: Request) {
       // })
 
       console.log('AI Response:', completion)
-      // Assuming completion is already a JSON object with the required fields
-      // Extract the data from the AI's completion
-      const completionObj =
-        typeof completion === 'string' ? JSON.parse(completion) : completion
-
-      // Now, extract the travel details from the parsed object
-      const { origin, destination, departure_date, return_date } = completionObj
-
-      // Now, you'll need to pass this information to your Duffel API route
-      // Here, we construct the payload for the Duffel API based on the extracted data
-      const duffelPayload = {
-        slices: [
-          {
-            origin, // e.g., 'LHR'
-            destination, // e.g., 'JFK'
-            departure_date // e.g., '2024-05-06'
-          }
-          // If there's a return flight, you'd add another object here for that slice
-        ],
-        passengers: [{ type: 'adult' }],
-        cabin_class: null // Or whichever class is required
-      }
-
-      // Send the payload to your /search API route
-      // This should be the full URL of your API route
-      const API_HOST =
-        process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3000' // Example host, adjust as needed
-
-      // Send the payload to your /search API route using the full URL
-      const duffelResponse = await fetch(`${API_HOST}/api/search`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(duffelPayload)
-      })
-
-      // Handle the Duffel response as needed
-      const searchResults = await duffelResponse.json()
-      // ... further processing or storage ...
-      console.log('Duffel response:', searchResults)
+      goSearch(completion)
     }
   })
+
+  const goSearch = async (completion: string) => {
+    const API_HOST = process.env.NEXT_PUBLIC_API_HOST || 'http://localhost:3000'
+    console.log('API_HOST', API_HOST)
+
+    // Convert your completion object to match the expected API structure
+    const comp = JSON.parse(completion)
+    const requestBody = {
+      slices: [
+        {
+          origin: comp.origin,
+          destination: comp.destination,
+          departure_date: comp.departure_date
+
+          // Any other slice-related information needed by the API
+        }
+        // ... handle return slice if needed
+      ],
+      passengers: [{ type: 'adult' }],
+      cabin_class: null // or any other class as per your completion object or defaults
+    }
+
+    //console.log('completion', completion)
+    console.log('requestBody', requestBody)
+    //console.log('JSON.stringify(requestBody)', JSON.stringify(requestBody))
+    const res = await fetch(`${API_HOST}/api/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    })
+    const data = await res.json()
+    console.log('data', data)
+  }
 
   return new StreamingTextResponse(stream)
 }

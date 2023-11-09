@@ -36,7 +36,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "app/api/search/route.js"
+    "app/api/search/route.ts"
   ],
   "exclude": [
     "node_modules"
