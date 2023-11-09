@@ -27,15 +27,28 @@ export async function POST(req: Request) {
   if (previewToken) {
     configuration.apiKey = previewToken
   }
-  const currentYear = new Date().getFullYear()
+
+  //date in ISO 8601 format
+
+  const date = new Date()
+
+  const year = date.getFullYear()
+  // Add 1 to the month and pad it with a leading zero if necessary
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  // Pad the day with a leading zero if necessary
+  const day = date.getDate().toString().padStart(2, '0')
+
+  const formattedDate = `${year}-${month}-${day}`
+
+  //  console.log(formattedDate);
 
   // Define your system prompt message
   const systemPrompt = {
     role: 'system',
     content:
-      'Extract travel details from the user\'s input, including origin, destination, and dates. Then, convert the locations to their closest airport code and structure the information in a JSON object with the keys "origin", "destination", "departure_date", and "return_date". The returned dates should always ' +
-      currentYear +
-      ' unless otherwise stated.'
+      'Extract travel details from the user\'s input, including origin, destination, and dates. Then, convert the locations to their closest airport code and structure the information in a JSON object with the keys "origin", "destination", "departure_date", and "return_date". The departure date should always be after todays date of ' +
+      formattedDate +
+      '.'
   }
   // Define a message to instruct the model to format the output as JSON
   const jsonFormatInstruction = {
